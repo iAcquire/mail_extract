@@ -41,7 +41,7 @@ module MailExtract
       end
       
       # Process the rest (if any)
-      if !break_after_quote && @last_type != :quote
+      if !break_after_quote && @last_type != :signature
         if (last_line = scanner.rest.to_s).size > 0
           parse_line(last_line)
         end
@@ -62,7 +62,7 @@ module MailExtract
         if @last_type == :signature ; @type = :signature ; end
       elsif line.signature?
         if @last_type == :text      ; @type = :signature ;
-        elsif @last_type == :quote  ; @type = :quote     ; end
+        elsif @last_type == :quote  ; @type = :quote     ; @lines.pop ; end
       end
       @last_type = line.type
       @lines << line.body.strip if @type == :text

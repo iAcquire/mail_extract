@@ -1,4 +1,5 @@
 require 'strscan'
+require 'pry'
 
 module MailExtract
   class Parser
@@ -14,6 +15,7 @@ module MailExtract
     #
     def initialize(text, options={})
       @lines     = []
+      @headers   = []
       @text      = text.strip
       @body      = ""
       @last_type = :text
@@ -35,15 +37,27 @@ module MailExtract
       while str = scanner.scan_until(/\n/)
         line = parse_line(str)
         
-        if break_after_quote
-          break if line.quote? && line.subtype == :start
+        if line.quote? && line.subtype == :start
+          break if break_after_quote
+          @headers << [line, @lines.count]
         end
+        break if line.reply_above?
       end
       
       # Process the rest (if any)
-      if !break_after_quote && @last_type != :signature
+      if !break_after_quote && @last_type != :quote
         if (last_line = scanner.rest.to_s).size > 0
           parse_line(last_line)
+        end
+      end
+
+      if @headers.count > 1
+        pos_adjust = 0
+        @headers.each do |line, pos|
+          if (@lines.count - pos - pos_adjust) > 2
+            @lines.insert(pos + pos_adjust, line.body.strip)
+            pos_adjust += 1
+          end
         end
       end
       
@@ -62,7 +76,7 @@ module MailExtract
         if @last_type == :signature ; @type = :signature ; end
       elsif line.signature?
         if @last_type == :text      ; @type = :signature ;
-        elsif @last_type == :quote  ; @type = :quote     ; @lines.pop ; end
+        elsif @last_type == :quote  ; @type = :quote     ; end
       end
       @last_type = line.type
       @lines << line.body.strip if @type == :text

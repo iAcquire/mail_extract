@@ -1,7 +1,4 @@
-Hi folks
+Hey I wanted to let you know: On Oct 5, 2013 at 11:00 AM, we're having this thing. You should come. Here are some instructions I wrote:
 
-What is the best way to clear a Riak bucket of all key, values after
-running a test?
-I am currently using the Java HTTP API.
-
--Abhishek Kona
+1. Bring a ball
+2. Have fun

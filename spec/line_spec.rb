@@ -11,6 +11,7 @@ describe 'MailExtract::Line' do
     line('On 2011-03-01 at 18:02 somebody wrote').type.should == :quote
     line('On 2011-03-01 at 18:02 somebody wrote').subtype.should == :start
     line('On some day somebody wrote').type.should == :text
+    line('>Please reply above this line ^^').type.should == :reply_above
   end
   
   it 'detects quote' do

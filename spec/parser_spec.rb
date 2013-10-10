@@ -13,7 +13,7 @@ describe 'MailExtract::Parser' do
   
   it 'parses a reply email with broken authored line' do
     body = parse_fixture('reply_with_quotes.txt')
-    body.should == 'This is a first line of the message'
+    body.should == result_fixture('reply_with_quotes.txt')
   end
   
   it 'parses a message send via iphone' do

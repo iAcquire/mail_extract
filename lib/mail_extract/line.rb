@@ -3,6 +3,7 @@ module MailExtract
     attr_reader :body, :type, :subtype
     
     PATTERNS = {
+      /(reply above this line)/      => :reply_above,
       /^[>]+\s?/                     => :quote,
       /^--/                          => :signature,
       /^-- /                         => :signature,
@@ -34,6 +35,10 @@ module MailExtract
     #
     def signature?
       type == :signature
+    end
+
+    def reply_above?
+      type == :reply_above
     end
     
     private

@@ -3,7 +3,7 @@ module MailExtract
     attr_reader :body, :type, :subtype
     
     PATTERNS = {
-      /(reply above this line)/      => :reply_above,
+      /reply above this line/        => :reply_above,
       /^[>]+\s?/                     => :quote,
       /^--/                          => :signature,
       /^-- /                         => :signature,
@@ -45,7 +45,8 @@ module MailExtract
     
     def detect_type(line)
       # Detects the start line of quote text
-      if line.strip =~ /^On\s/i && line =~ /at [\d:]+/ || line.strip =~ />? wrote:\z/
+      if line.strip =~ /^On\s/i && line =~ /at [\d:]+/ || line.strip =~ />? wrote:\z/ ||
+          line.strip =~ /^>?From:.+\@.+\.\S{2,5}$/ || line.strip =~ /^>?Date:.+(\d{2}:\d{2}:).+\+\d{4}$/
         @type    = :quote
         @subtype = :start
         return

@@ -51,6 +51,7 @@ module MailExtract
         end
       end
 
+      # Check for false positives, leave quote headers out
       if @headers.count > 1
         pos_adjust = 0
         @headers.each do |line, pos|
@@ -59,6 +60,13 @@ module MailExtract
             pos_adjust += 1
           end
         end
+      end
+
+      # Remove Outlook-styled header
+      if @headers.any? && @headers[-1][0].body.strip =~ /^>?Date:.+(\d{2}:\d{2}:).+\+\d{4}$/ &&
+          @headers[-2][0].body.strip =~ /^>?From:.+\@.+\.\S{2,5}$/
+        header_position = @headers[-1][1] + (pos_adjust || 0)
+        @lines = @lines[0..header_position-5]
       end
       
       @body = @lines.join("\n").strip

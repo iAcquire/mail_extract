@@ -21,6 +21,11 @@ describe 'MailExtract::Parser' do
     body.should == 'This is a shit i sent from my iphone'
   end
 
+  it 'parses a reply sent via outlook' do
+    body = parse_fixture('outlook_reply.txt')
+    body.should == 'Test from online version of Outlook.'
+  end
+
   it 'parses a reply sent via iphone' do
     body = MailExtract.new(fixture('iphone_with_quotes.txt'), :only_head => true).body
     body.should == 'Primary reply content'

@@ -1,10 +1,9 @@
 require 'strscan'
-require 'pry'
 
 module MailExtract
   class Parser
     attr_reader :body
-    
+
     # Initialize a new MailExtract::Parser object
     #
     # text    - Email message body
@@ -21,29 +20,29 @@ module MailExtract
       @last_type = :text
       @type      = :text
       @options   = options
-      
+
       parse
     end
-    
+
     private
-    
+
     # Process email message body
     #
     def parse
       break_after_quote = @options[:only_head] || false
       scanner = StringScanner.new(@text)
-      
+
       # Process until message end
       while str = scanner.scan_until(/\n/)
         line = parse_line(str)
-        
+
         if line.quote? && line.subtype == :start
           break if break_after_quote
           @headers << [line, @lines.count]
         end
         break if line.reply_above?
       end
-      
+
       # Process the rest (if any)
       if !break_after_quote && @last_type != :quote
         if (last_line = scanner.rest.to_s).size > 0
@@ -68,15 +67,15 @@ module MailExtract
         header_position = @headers[-1][1] + (pos_adjust || 0)
         @lines = @lines[0..header_position-5]
       end
-      
+
       @body = @lines.join("\n").strip
     end
-    
+
     # Process a single line
     #
     def parse_line(str)
       line = MailExtract::Line.new(str)
-      
+
       if line.quote?
         if @last_type == :text      ; @type = :quote     ; end
       elsif line.text?
@@ -88,7 +87,7 @@ module MailExtract
       end
       @last_type = line.type
       @lines << line.body.strip if @type == :text
-      
+
       line
     end
   end
